@@ -1,0 +1,4 @@
+cd "$HOME/git/myscripts/docker" || exit
+./stop-docker-containers.sh "$1"
+./remove-docker-containers.sh "$1"
+./remove-docker-images.sh "$1"
