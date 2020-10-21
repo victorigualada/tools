@@ -2,7 +2,7 @@
 
 ## Installation
 
-Add the scripts folder to the `~/.profile` or `~/.bashrc` file:
+Add the scripts folder to the `PATH`. For example:
 
 ```shell script
 cd docker
