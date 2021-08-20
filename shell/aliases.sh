@@ -157,3 +157,10 @@ alias fnf='find .  -type f -name'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias grep='grep --color=auto'
+
+# Bat
+alias cat='batcat --theme=ansi-dark --tabs=2 --style="numbers,changes,header"'
+
+# LSOF
+alias ports='sudo lsof -i -P -n | grep LISTEN'
+alias port='sudo lsof -i -P -n | grep LISTEN | grep '
