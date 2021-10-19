@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Creates a Github PR with the info on the Jira ticket. It needs the branch name to contain the Jira issue ID
+#   For example, then branch should have the form: DEV-123_any_other_text or just DEV-123
+# It required jq and gh to be installed
+
+current_ticket=$(git branch --show-current | grep -e '[A-Z]\+-[0-9]\+' -o)
+
+jira_issue=$(curl -s -b -D-\
+   -u "${ORG_EMAIL}":"${JIRA_API_TOKEN}" \
+   -X GET \
+   -H "Content-Type: application/json" \
+   "https://${ORG}.atlassian.net/rest/api/latest/issue/${current_ticket}")
+
+issue_title=$(echo "${jira_issue}" | jq '.fields.summary')
+
+pr_title="${current_ticket}: ${issue_title//\"}"
+
+gh pr create --body "" -r justinegreene -r ralejandre --title "${pr_title}"
