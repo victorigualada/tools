@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# This script is intended to be run in a git-hook, ideally in the pre-push hook
+
+current_branch=$(git branch --show-current)
+
+updated_changelog=$(git diff --stat origin/"${current_branch}".. | grep CHANGELOG.md)
+
+if [[ -z "${updated_changelog}" ]]; then
+  echo -e "\033[0;31m CHANGELOG.md is unchanged. Please update it and try again \033[m"
+  exit 1
+fi
