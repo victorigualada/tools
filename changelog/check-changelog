@@ -19,4 +19,3 @@ if [ -z "$branch_exists" ];then
     echo -e "\033[0;31mCHANGELOG.md not updated. Please update it an try again. \033[m"
     exit 1
   fi
-fi
