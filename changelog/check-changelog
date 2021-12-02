@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# This script is intended to be run in a git-hook, ideally in the pre-push hook
+
+branch_exists=$(git ls-remote origin "$(git branch --show-current)")
+
+if [ -z "$branch_exists" ];then
+  parent_branch=$(git log --decorate \
+  | grep 'commit' \
+  | grep 'origin/' \
+  | head -n 2 \
+  | tail -n 1 \
+  | awk '{ print $2 }' \
+  | tr -d "\n")
+  current_branch=$(git branch --show-current)
+  changelog_updated=$(git diff-tree --no-commit-id --name-only -r "$parent_branch..$current_branch" --diff-filter=M | grep CHANGELOG.md)
+
+  if [ -z "$changelog_updated" ];then
+    echo -e "\033[0;31mCHANGELOG.md not updated. Please update it an try again. \033[m"
+    exit 1
+  fi
+fi
