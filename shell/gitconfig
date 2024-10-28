@@ -1,14 +1,15 @@
 [user]
-	email = #REDACTED#
-	name = Victor
+	name = victorigualada
+	email = victorigualada@gmail.com
 [core]
 	editor = vim
+	pager = diff-so-fancy | less --tabs=4 -RFX
 [alias]
 	# NOTES
 	# You must use double quotes if using spaces, otherwise you'll get command not found.
 	# You don't need to reload your terminal - git aliases are evaluated fresh each time.
 	aa = "add -A"
-	
+
 	st = "status -s -b"
 
 	c = "commit"
@@ -17,8 +18,26 @@
 	# --verbose
 	br = "branch -a -v"
 
-	co = "checkout"
-	cb = "checkout -b"
+        co = !"find_and_checkout_branch(){\
+          for last; do true; done ; \
+          pattern='^.*$' ;\
+          if [[ $# -eq 1 && $last =~ $pattern ]] ;\
+          then \
+            branch_pattern=`echo $last | sed -e 's/^\\///' -e 's/\\/$//'` ;\
+            branch=`git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads/ | grep -E $branch_pattern | head -n1` ;\
+            if [[ $branch ]] ; then \
+              git checkout $branch ;\
+            else \
+              echo "No branch found matching $last" ; \
+              exit 1 ; \
+            fi \
+          else \
+            git checkout $@ ;\
+          fi \
+        } ; find_and_checkout_branch"
+
+        c-="checkout --"
+        cb = "checkout -b"
 
 	# Normally `git diff` only shows unstaged changes. This will show only staged (i.e. cached)
 	# changes and uses HEAD as the default <commit> value.
@@ -124,6 +143,9 @@
 	# - Will not affect unversioned files - use a clean command for that.
 	# See also gpristine on ZSH but that also removes ignored files I think.
 	resetco = "! git reset HEAD && git checkout . && git status"
+	caa = commit -a --amend -C HEAD
+
+        #sweep = "! git branch -vv | grep ': gone]'| grep -v '\*' | awk '{ print $1; }' | xargs -r git branch -d"
 
 [pull]
 	# New versions of git tell you to set this explicitly. Here is the default behavior. This means
@@ -135,7 +157,31 @@
 	# This is setup to happen when running fetch/pull, to avoid having to run it
 	# manually as "git remote prune origin".
 	prune = true
-	
+
 [init]
 	# Set branch for git init. GitHub uses main but git uses master.
 	defaultBranch = "main"
+[interactive]
+	diffFilter = diff-so-fancy --patch
+[color]
+	ui = true
+[color "diff-highlight"]
+	oldNormal = red bold
+	oldHighlight = red bold 52
+	newNormal = green bold
+	newHighlight = green bold 22
+[color "diff"]
+	meta = 11
+	frag = magenta bold
+	func = 146 bold
+	commit = yellow bold
+	old = red bold
+	new = green bold
+	whitespace = red reverse
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+[push]
+	autoSetupRemote = true
